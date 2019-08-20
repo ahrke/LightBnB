@@ -26,7 +26,7 @@ const getUserWithEmail = function(email) {
   };
 
   return pool.query(query)
-    .then(res => res.rows)
+    .then(res => res.rows[0])
     .catch(err => console.error('query error',err.stack));
 }
 exports.getUserWithEmail = getUserWithEmail;
@@ -46,7 +46,7 @@ const getUserWithId = function(id) {
   };
 
   return pool.query(query)
-    .then(res => res.rows)
+    .then(res => res.rows[0])
     .catch(err => console.error('query error',err.stack));
 }
 exports.getUserWithId = getUserWithId;
@@ -82,7 +82,23 @@ exports.addUser = addUser;
  * @return {Promise<[{}]>} A promise to the reservations.
  */
 const getAllReservations = function(guest_id, limit = 10) {
-  return getAllProperties(null, 2);
+  const query = {
+    text: `
+    SELECT r.*, p.*, AVG (pr.rating) FROM properties p
+      JOIN reservations r ON r.property_id = p.id
+      JOIN property_reviews pr ON pr.property_id = p.id
+      WHERE r.guest_id = $1
+      GROUP BY r.id, p.id
+      HAVING r.end_date < now()::date
+      ORDER BY r.start_date DESC
+      LIMIT $2;
+    `,
+    values: [guest_id, limit]
+  };
+
+  return pool.query(query)
+    .then(res => res.rows)
+    .catch(err => console.error('query error', err.stack));
 }
 exports.getAllReservations = getAllReservations;
 

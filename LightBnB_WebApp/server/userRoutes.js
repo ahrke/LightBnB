@@ -39,11 +39,13 @@ module.exports = function(router, database) {
     const {email, password} = req.body;
     login(email, password)
       .then(user => {
+        console.log('user==>',user);
         if (!user) {
           res.send({error: "error"});
           return;
         }
         req.session.userId = user.id;
+        console.log('session.userId ===> ',req.session.userId)
         res.send({user: {name: user.name, email: user.email, id: user.id}});
       })
       .catch(e => res.send(e));
