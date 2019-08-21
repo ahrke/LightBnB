@@ -9,6 +9,13 @@ module.exports = function(router, database) {
     }); 
   });
 
+  router.get('/reservations/:property_id', (req, res) => {
+    let template = {
+      property_id: req.params.property_id
+    }
+    res.render('new_reservation', template);
+  })
+
   router.get('/reservations', (req, res) => {
     const userId = req.session.userId;
     if (!userId) {
@@ -21,6 +28,18 @@ module.exports = function(router, database) {
       console.error(e);
       res.send(e)
     });
+  });
+
+  router.post('/reservations/:property_id', (req, res) => {
+    const userId = req.session.userId;
+    database.addReservation({...req.body, guest_id: userId, property_id: req.params.property_id})
+      .then(reservation => {
+        res.redirect('/');
+      })
+      .catch(e => {
+        console.error(e);
+        res.send(e)
+      });
   });
 
   router.post('/properties', (req, res) => {

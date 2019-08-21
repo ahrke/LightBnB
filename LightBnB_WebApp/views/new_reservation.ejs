@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>New Reservation for <%= property_id %></title>
+  </head>
+
+  <body>
+
+    <form action="/api/reservations/<%= property_id %>" method="post" id="new-reservation-form" class="new-property-form">
+
+      <div class="new-property-form__field-wrapper">
+        <label for="new-reservation-form__start">Start Date</label>
+        <input type="date" name="start" id="new-reservation-form__start" />
+      </div>
+
+      <div class="new-property-form__field-wrapper">
+        <label for="new-reservation-form__start">End Date</label>
+        <input type="date" name="end" id="new-reservation-form__end" />
+      </div>
+
+      <div class="new-property-form__field-wrapper">
+          <button type='submit'>Reserve</button>
+      </div>
+        
+    </form>
+
+  </body>
+</html>

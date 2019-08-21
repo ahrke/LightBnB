@@ -92,7 +92,7 @@ const getAllReservations = function(guest_id, limit = 10) {
   const query = {
     text: `
     SELECT r.*, p.*, AVG (pr.rating) FROM properties p
-      JOIN reservations r ON r.property_id = p.id
+      LEFT OUTER JOIN reservations r ON r.property_id = p.id
       JOIN property_reviews pr ON pr.property_id = p.id
       WHERE r.guest_id = $1
       GROUP BY r.id, p.id
@@ -115,7 +115,7 @@ const getAllReservations = function(guest_id, limit = 10) {
 }
 exports.getAllReservations = getAllReservations;
 
-/// Properties
+// Properties
 
 /**
  * Get all properties.
@@ -246,3 +246,41 @@ const addProperty = function(property) {
   })
 }
 exports.addProperty = addProperty;
+
+
+/**
+ * Add a reservation to the database
+ * @param {{}} reservation An object containing all of the reservation details.
+ * @return {Promise<{}>} A promise to the reservation.
+ */
+const addReservation = function(reservation) {
+  let queryParams = [
+    reservation.guest_id,
+    reservation.start,
+    reservation.end, 
+    reservation.property_id
+  ]
+  let queryStr = `
+    INSERT INTO reservations 
+      (guest_id, start_date, end_date, property_id)
+      VALUES 
+        ( $1, $2, $3, $4 )
+      RETURNING *;
+  `;
+
+  const query = {
+    text: queryStr,
+    values: queryParams
+  };
+
+  return new Promise((resolve, reject) => {
+    db.query(query.text, query.values, (err, res) => {
+      if (err) {
+        console.error('query error',err.stack);
+        reject(err);
+      }
+      resolve(res.rows);
+    });
+  })
+}
+exports.addReservation = addReservation;
