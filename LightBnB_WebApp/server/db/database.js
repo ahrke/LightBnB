@@ -1,15 +1,4 @@
-const properties = require('./json/properties.json');
-const users = require('./json/users.json');
-const { Pool } = require('pg');
-
-const pool = new Pool({
-  name: '',
-  password: '123',
-  host: 'localhost',
-  database: 'lightbnb'
-})
-
-/// Users
+const db = require('./index');
 
 /**
  * Get a single user from the database given their email.
@@ -25,9 +14,15 @@ const getUserWithEmail = function(email) {
     values: [email]
   };
 
-  return pool.query(query)
-    .then(res => res.rows[0])
-    .catch(err => console.error('query error',err.stack));
+  return new Promise((resolve, reject) => {
+    db.query(query.text, query.values, (err, res) => {
+      if (err) {
+        console.error('query error',err.stack);
+        reject(err);
+      }
+      resolve(res.rows[0]);
+    });
+  })
 }
 exports.getUserWithEmail = getUserWithEmail;
 
@@ -45,9 +40,15 @@ const getUserWithId = function(id) {
     values: [id]
   };
 
-  return pool.query(query)
-    .then(res => res.rows[0])
-    .catch(err => console.error('query error',err.stack));
+  return new Promise((resolve, reject) => {
+    db.query(query.text, query.values, (err, res) => {
+      if (err) {
+        console.error('query error',err.stack);
+        reject(err);
+      }
+      resolve(res.rows[0]);
+    });
+  })
 }
 exports.getUserWithId = getUserWithId;
 
@@ -68,9 +69,15 @@ const addUser =  function(user) {
     values: [user.name, user.email, user.password]
   };
 
-  return pool.query(query)
-    .then(res => res.rows)
-    .catch(err => console.error('query error',err.stack));
+  return new Promise((resolve, reject) => {
+    db.query(query.text, query.values, (err, res) => {
+      if (err) {
+        console.error('query error',err.stack);
+        reject(err);
+      }
+      resolve(res.rows);
+    });
+  })
 }
 exports.addUser = addUser;
 
@@ -96,9 +103,15 @@ const getAllReservations = function(guest_id, limit = 10) {
     values: [guest_id, limit]
   };
 
-  return pool.query(query)
-    .then(res => res.rows)
-    .catch(err => console.error('query error', err.stack));
+  return new Promise((resolve, reject) => {
+    db.query(query.text, query.values, (err, res) => {
+      if (err) {
+        console.error('query error',err.stack);
+        reject(err);
+      }
+      resolve(res.rows);
+    });
+  })
 }
 exports.getAllReservations = getAllReservations;
 
@@ -171,9 +184,15 @@ const getAllProperties = function(options, limit = 10) {
     values: queryParams
   };
 
-  return pool.query(query)
-    .then(res => res.rows)
-    .catch(err => console.error('query error',err.stack));
+  return new Promise((resolve, reject) => {
+    db.query(query.text, query.values, (err, res) => {
+      if (err) {
+        console.error('query error',err.stack);
+        reject(err);
+      }
+      resolve(res.rows);
+    });
+  })
 }
 exports.getAllProperties = getAllProperties;
 
@@ -216,8 +235,14 @@ const addProperty = function(property) {
     values: queryParams
   };
 
-  return pool.query(query)
-    .then(res => res.rows)
-    .catch(err => console.error('query error', err.stack));
+  return new Promise((resolve, reject) => {
+    db.query(query.text, query.values, (err, res) => {
+      if (err) {
+        console.error('query error',err.stack);
+        reject(err);
+      }
+      resolve(res.rows);
+    });
+  })
 }
 exports.addProperty = addProperty;
