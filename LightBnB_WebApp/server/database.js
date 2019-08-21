@@ -111,7 +111,6 @@ exports.getAllReservations = getAllReservations;
  * @return {Promise<[{}]>}  A promise to the properties.
  */
 const getAllProperties = function(options, limit = 10) {
-  console.log('options===> ',options)
 
   const queryParams = [];
 
@@ -119,7 +118,7 @@ const getAllProperties = function(options, limit = 10) {
   let queryString = `
   SELECT p.*, avg(pr.rating) as average_rating
   FROM properties p
-  JOIN property_reviews pr ON p.id = pr.property_id
+  LEFT OUTER JOIN property_reviews pr ON p.id = pr.property_id
   `;
 
   // Account for search options. Append to query based on set options, in conjunction with other options selected
